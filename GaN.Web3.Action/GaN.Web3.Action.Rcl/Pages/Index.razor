@@ -1,0 +1,135 @@
+﻿@page "/"
+@using System.Globalization
+@using System.Numerics
+@using GaN.Web3.Action.Rcl.Factory
+@using GaN.Web3.Action.Rcl.Interceptor
+@using GaN.Web3.Action.Rcl.Service
+@using Nethereum.JsonRpc.Client
+@using Nethereum.Signer
+@using Nethereum.Util
+@using Nethereum.Web3
+@using Nethereum.Web3.Accounts
+@inject IPopupService PopupService
+@inject TransferService TransferService
+<PageTitle>EVM Net</PageTitle>
+<MContainer Class="d-flex">
+    <MRow>
+        <MCol>
+            <MTextField Class="" @bind-Value="Rpc" Prefix="Chain RPC: " Solo Disabled="IsLockWrite"/>
+        </MCol>
+        <MCol>
+            <MTextField Class="" @bind-Value="RpcLimit" Prefix="RPC Limit(n/s): " Disabled="IsLockWrite" Solo/>
+        </MCol>
+    </MRow>
+</MContainer>
+<MContainer>
+    <MRow>
+        <MCol Class="d-flex">
+            <MTextField Solo @bind-Value="TokenAddress" Prefix="TokenAddress: "
+                        Disabled="IsLockWrite || HasTransferBaseCoin" Class="xs-12 sm-8"/>
+            <MSwitch TValue="bool" @bind-value="HasTransferBaseCoin">Transfer Base Coin</MSwitch>
+        </MCol>
+        <MCol>
+            <MTextField Solo @bind-Value="Decimals" Prefix="Decimals: " Disabled="IsLockWrite" Class="xs-12 sm-4"/>
+        </MCol>
+    </MRow>
+    <MTextField Solo @bind-Value="FirstWallet" Disabled="IsLockWrite" Prefix="first wallet private key: "/>
+
+    <MTextField Solo @bind-Value="ToAddress" Prefix="To: " Disabled="IsLockWrite"/>
+    <MTextField Solo @bind-Value="SendToAddressAmount" Disabled="IsLockWrite"
+                Prefix="Send ToAddress Amount(0.01 == 0.01 * 10**18): "/>
+    <MTextField Solo @bind-Value="SendGenAddressAmount" Disabled="IsLockWrite"
+                Prefix="Send Gen Address Amount(0.01 == 0.01 * 10**18): "/>
+    <MTextField Solo @bind-Value="FilePath" Disabled="IsLockWrite" Prefix="Save Gen Account PrivateKey To File: "/>
+    <MButton OnClick="StartAction" Disabled="IsLockWrite">Start</MButton>
+    <MButton OnClick="StopAction">Stop</MButton>
+</MContainer>
+
+@code{
+    public string Rpc { get; set; } = "https://rpc.ankr.com/polygon_mumbai";
+    public int RpcLimit { get; set; } = 3;
+    public int Decimals { get; set; } = 18;
+    public string ToAddress { get; set; } = "";
+    public string TokenAddress { get; set; } = "0x0000000000000000000000000000000000001010";
+    public string FirstWallet { get; set; } = "";
+    private bool IsStart { get; set; }
+    public string FilePath { get; set; } = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+    public string SendToAddressAmount { get; set; } = "0";
+    public string SendGenAddressAmount { get; set; } = "0";
+    public bool HasTransferBaseCoin { get; set; } = false;
+
+    private bool IsLockWrite { get; set; }
+
+    private async Task StartAction()
+    {
+        IsStart = true;
+        IsLockWrite = true;
+        await Run();
+    }
+
+    private RequestInterceptor? _interceptor = new RequestRateLimiterInterceptor(TimeSpan.FromSeconds(1));
+
+    private async Task Run()
+    {
+        _interceptor = new RequestRateLimiterInterceptor(TimeSpan.FromSeconds(1), RpcLimit);
+
+        var path = Path.Combine(FilePath, $"{DateTime.Now:yyyyMMdd_HHmmss}-PrivateKeys.txt");
+
+        var firstAccount = new Account(FirstWallet);
+        var firstAccountWeb3 = Web3Factory.Build(firstAccount, Rpc);
+
+        var toGenWalletAmount = BigInteger.Parse($"{SendGenAddressAmount}e{Decimals}", NumberStyles.Float);
+        var toAddressAmount = BigInteger.Parse($"{SendToAddressAmount}e{Decimals}", NumberStyles.Float);
+
+        await using var streamWriter = File.AppendText(path);
+        while (true)
+        {
+            if (!IsStart)
+            {
+                break;
+            }
+
+            var ethEcKey = EthECKey.GenerateKey();
+            var privateKey = ethEcKey.GetPrivateKey();
+            var genAccount = new Account(privateKey);
+            var genAccountWeb3 = new Web3(genAccount, Rpc);
+
+            await genAccountWeb3.Eth.GetBalance.SendRequestAsync(genAccount.Address);
+
+            if (HasTransferBaseCoin)
+            {
+                await TransferService.ExecCoinBaseTransferAsync(firstAccountWeb3, genAccount.Address, decimal.Parse(SendGenAddressAmount));
+            }
+            else
+            {
+                await TransferService.ExecErc20TransferAsync(firstAccountWeb3, TokenAddress, genAccount.Address, toGenWalletAmount);
+            }
+
+            await streamWriter.WriteLineAsync(genAccount.PrivateKey);
+
+            if (ToAddress.IsNotAnEmptyAddress())
+            {
+                if (HasTransferBaseCoin)
+                {
+                    await TransferService.ExecCoinBaseTransferAsync(genAccountWeb3, ToAddress, decimal.Parse($"{SendToAddressAmount}e{Decimals}", NumberStyles.Float));
+                }
+                else
+                {
+                    await TransferService.ExecErc20TransferAsync(genAccountWeb3, TokenAddress, ToAddress, toAddressAmount);
+                }
+            }
+
+            await PopupService.EnqueueSnackbarAsync($"transfer {toGenWalletAmount} to {genAccount.Address} success!", AlertTypes.Success);
+
+            await streamWriter.FlushAsync();
+        }
+    }
+
+    private void StopAction()
+    {
+        IsStart = false;
+
+        IsLockWrite = false;
+    }
+
+}

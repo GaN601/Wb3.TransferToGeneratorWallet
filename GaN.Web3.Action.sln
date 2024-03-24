@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GaN.Web3.Action", "GaN.Web3.Action\GaN.Web3.Action\GaN.Web3.Action.csproj", "{95989DCB-334D-4231-87A6-05F6486885DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GaN.Web3.Action.Client", "GaN.Web3.Action\GaN.Web3.Action.Client\GaN.Web3.Action.Client.csproj", "{90AD2AF1-ADD3-46DC-9AF5-34196BCE4900}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GaN.Web3.Action.Rcl", "GaN.Web3.Action\GaN.Web3.Action.Rcl\GaN.Web3.Action.Rcl.csproj", "{854CFD50-D4FA-4FC6-8485-8266584C0C12}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GaN.Web3.Action.Server", "GaN.Web3.Action\GaN.Web3.Action.Server\GaN.Web3.Action.Server.csproj", "{570D6C80-6E01-4D59-BE71-874C818F3F0F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{95989DCB-334D-4231-87A6-05F6486885DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95989DCB-334D-4231-87A6-05F6486885DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95989DCB-334D-4231-87A6-05F6486885DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95989DCB-334D-4231-87A6-05F6486885DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90AD2AF1-ADD3-46DC-9AF5-34196BCE4900}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90AD2AF1-ADD3-46DC-9AF5-34196BCE4900}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90AD2AF1-ADD3-46DC-9AF5-34196BCE4900}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90AD2AF1-ADD3-46DC-9AF5-34196BCE4900}.Release|Any CPU.Build.0 = Release|Any CPU
+		{854CFD50-D4FA-4FC6-8485-8266584C0C12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{854CFD50-D4FA-4FC6-8485-8266584C0C12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{854CFD50-D4FA-4FC6-8485-8266584C0C12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{854CFD50-D4FA-4FC6-8485-8266584C0C12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{570D6C80-6E01-4D59-BE71-874C818F3F0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{570D6C80-6E01-4D59-BE71-874C818F3F0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{570D6C80-6E01-4D59-BE71-874C818F3F0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{570D6C80-6E01-4D59-BE71-874C818F3F0F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
