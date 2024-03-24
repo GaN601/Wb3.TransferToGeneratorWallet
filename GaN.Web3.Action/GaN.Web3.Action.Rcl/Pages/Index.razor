@@ -111,7 +111,7 @@
             {
                 if (HasTransferBaseCoin)
                 {
-                    await TransferService.ExecCoinBaseTransferAsync(genAccountWeb3, ToAddress, decimal.Parse($"{SendToAddressAmount}e{Decimals}", NumberStyles.Float));
+                    await TransferService.ExecCoinBaseTransferAsync(genAccountWeb3, ToAddress, decimal.Parse(SendToAddressAmount));
                 }
                 else
                 {
