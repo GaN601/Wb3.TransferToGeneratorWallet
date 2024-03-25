@@ -27,7 +27,7 @@
         <MCol Class="d-flex">
             <MTextField Solo @bind-Value="TokenAddress" Prefix="TokenAddress: "
                         Disabled="IsLockWrite || HasTransferBaseCoin" Class="xs-12 sm-8"/>
-            <MSwitch TValue="bool" @bind-value="HasTransferBaseCoin">Transfer Base Coin</MSwitch>
+            <MSwitch TValue="bool" @bind-value="HasTransferBaseCoin" Label="BaseCoin"/>
         </MCol>
         <MCol>
             <MTextField Solo @bind-Value="Decimals" Prefix="Decimals: " Disabled="IsLockWrite" Class="xs-12 sm-4"/>
